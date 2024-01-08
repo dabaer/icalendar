@@ -249,7 +249,11 @@ defmodule ICalendar.Util.Deserialize do
         _ -> date_string <> "Z"
       end
 
-    Timex.parse(date_string <> timezone, "{YYYY}{0M}{0D}T{h24}{m}{s}Z{Zname}")
+    case Timex.parse(date_string <> timezone, "{YYYY}{0M}{0D}Z{Zname}") do
+      {:ok, dt} -> {:ok, dt}
+      {:error, _} ->
+        Timex.parse(date_string <> timezone, "{YYYY}{0M}{0D}T{h24}{m}{s}Z{Zname}")
+    end
   end
 
   def to_date(date_string, %{"VALUE" => "DATE"}) do
